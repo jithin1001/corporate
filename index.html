@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capital Structure & EBIT–EPS Analysis Calculator | Finance & Commerce Suite</title>
+  <meta name="description" content="Professional financial calculator and educational learning tool for B.Com, M.Com, ACCA, and MBA finance students. EBIT-EPS analysis, Indifference point, DFL, Capital Structure, and Scenario simulation.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/print.css" media="print">
+</head>
+<body>
+
+  <!-- Top App Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-wrapper">
+        <button id="mobileMenuToggle" class="mobile-menu-btn" aria-label="Toggle Navigation">☰</button>
+        <div class="brand-logo-icon">₹</div>
+        <div class="brand-titles">
+          <h1>Capital Structure & EBIT–EPS Analyzer</h1>
+          <p>Financial Calculator & Learning Suite for B.Com, M.Com, ACCA & MBA</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <!-- Currency Selector -->
+        <div class="control-group">
+          <label for="currencySelector" class="control-label">Currency:</label>
+          <select id="currencySelector" class="form-select-sm" aria-label="Select Currency">
+            <option value="INR" selected>₹ INR (Indian Rupee)</option>
+            <option value="USD">$ USD (US Dollar)</option>
+            <option value="EUR">€ EUR (Euro)</option>
+            <option value="GBP">£ GBP (British Pound)</option>
+          </select>
+        </div>
+
+        <!-- Presets Dropdown -->
+        <div class="control-group">
+          <select id="quickPresetSelect" class="form-select-sm" onchange="if(this.value) { App.loadPreset(this.value); this.value=''; }">
+            <option value="">⚡ Load Preset Example...</option>
+            <option value="preset1">Example 1: Debt vs Equity</option>
+            <option value="preset2">Example 2: Indifference Point</option>
+            <option value="preset3">Example 3: Capital Structure</option>
+            <option value="preset4">Example 4: Financial Leverage</option>
+          </select>
+        </div>
+
+        <!-- Export Buttons -->
+        <div class="control-group">
+          <button class="btn btn-sm btn-outline btn-export-pdf" title="Export as PDF / Print Report">📄 PDF</button>
+          <button class="btn btn-sm btn-outline btn-export-excel" title="Download Excel Spreadsheet">📊 Excel</button>
+          <button class="btn btn-sm btn-outline btn-export-csv" title="Download CSV Data">📑 CSV</button>
+        </div>
+
+        <!-- Glossary Quick Button -->
+        <button id="openGlossaryBtn" class="btn btn-sm btn-outline" title="Open Financial Terms Glossary">📖 Glossary</button>
+
+        <!-- Theme Toggle -->
+        <button id="themeToggleBtn" class="btn btn-sm btn-outline" title="Toggle Theme">🌙 Dark Mode</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- App Main Layout (Sidebar + Sections) -->
+  <div class="app-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="nav-section-title">Core Calculators</div>
+      <button class="nav-item-btn active" data-nav-target="tab-dashboard">
+        <span class="nav-icon">🏠</span> Home Dashboard
+      </button>
+      <button class="nav-item-btn" data-nav-target="tab-ebit-eps">
+        <span class="nav-icon">📊</span> EBIT–EPS Calculator
+      </button>
+      <button class="nav-item-btn" data-nav-target="tab-indifference">
+        <span class="nav-icon">🎯</span> Indifference Point
+      </button>
+      <button class="nav-item-btn" data-nav-target="tab-capital-structure">
+        <span class="nav-icon">⚖️</span> Capital Structure
+      </button>
+      <button class="nav-item-btn" data-nav-target="tab-debt-equity">
+        <span class="nav-icon">🔀</span> Debt vs Equity Simulator
+      </button>
+      <button class="nav-item-btn" data-nav-target="tab-leverage">
+        <span class="nav-icon">📈</span> Financial Leverage & ICR
+      </button>
+
+      <div class="nav-section-title">Analysis & Simulation</div>
+      <button class="nav-item-btn" data-nav-target="tab-scenario">
+        <span class="nav-icon">🔮</span> Scenario Analysis
+      </button>
+      <button class="nav-item-btn" data-nav-target="tab-sensitivity">
+        <span class="nav-icon">🧪</span> Sensitivity Matrix
+      </button>
+
+      <div class="nav-section-title">Educational Resources</div>
+      <button class="nav-item-btn" data-nav-target="tab-advanced">
+        <span class="nav-icon">🧮</span> Advanced Formulas (9)
+      </button>
+      <button class="nav-item-btn" data-nav-target="tab-learn">
+        <span class="nav-icon">📚</span> Learn Capital Structure
+      </button>
+      <button class="nav-item-btn" data-nav-target="tab-history">
+        <span class="nav-icon">📜</span> Calculation History
+      </button>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="app-main" id="appMainContent">
+
+      <!-- ===================================================================
+           TAB 1: HOME DASHBOARD
+           =================================================================== -->
+      <section class="app-section active" id="tab-dashboard">
+        <div class="section-header-block">
+          <h2>Capital Structure & EBIT–EPS Analyzer</h2>
+          <p>Understand how financing decisions affect EPS, financial leverage, and capital structure.</p>
+        </div>
+
+        <!-- Educational Callout Banner -->
+        <div class="educational-callout-banner">
+          <div class="callout-icon">💡</div>
+          <div class="callout-content">
+            <blockquote>
+              "Capital structure refers to the mix of debt and equity used by a company to finance its operations and investments. EBIT–EPS analysis helps determine how different financing choices affect earnings available to shareholders and EPS at different levels of EBIT."
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Quick Summary Metric Cards -->
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-header-flex">
+              <span class="card-title">Plan A EPS (Debt)</span>
+              <span class="badge-tag">Current Base</span>
+            </div>
+            <div class="result-hero-val" id="dashEpsPlanA">₹6.30</div>
+            <p class="text-muted">At base operating profit (EBIT)</p>
+          </div>
+
+          <div class="card">
+            <div class="card-header-flex">
+              <span class="card-title">Plan B EPS (Equity)</span>
+              <span class="badge-tag">Current Base</span>
+            </div>
+            <div class="result-hero-val" id="dashEpsPlanB">₹5.73</div>
+            <p class="text-muted">At base operating profit (EBIT)</p>
+          </div>
+
+          <div class="card">
+            <div class="card-header-flex">
+              <span class="card-title">Indifference EBIT</span>
+              <span class="badge-tag badge-primary">Break-Even</span>
+            </div>
+            <div class="result-hero-val text-primary" id="dashIndiffEbit">₹5.50 Lakh</div>
+            <p class="text-muted">Point where both plans yield equal EPS</p>
+          </div>
+        </div>
+
+        <!-- Interactive Quick Question Example -->
+        <div class="card" style="margin-bottom: 24px; background: linear-gradient(135deg, var(--bg-surface), var(--primary-light));">
+          <div class="card-header-flex">
+            <span class="card-title">❓ Classroom Exploration: What happens to EPS if a company uses debt instead of equity?</span>
+            <button class="btn btn-primary btn-sm" data-preset="preset1">Try Debt vs Equity Example</button>
+          </div>
+          <p style="color: var(--text-sub); font-size: 13.5px;">
+            Debt financing involves contractual interest payments which are tax-deductible. While debt introduces financial risk, it avoids issuing new shares. When EBIT is high, debt magnifies EPS; when EBIT is low, fixed interest can sharply depress EPS!
+          </p>
+        </div>
+
+        <!-- 4 Main Navigation Action Cards -->
+        <div class="grid-4">
+          <div class="card" style="cursor: pointer;" onclick="App.switchTab('tab-ebit-eps')">
+            <div style="font-size: 28px; margin-bottom: 8px;">📊</div>
+            <h3 style="font-size: 15px; margin-bottom: 6px; color: var(--primary);">A. EBIT–EPS Analysis</h3>
+            <p style="font-size: 12px; color: var(--text-muted);">Compare EPS under different financing plans with step-by-step mathematical substitution.</p>
+          </div>
+
+          <div class="card" style="cursor: pointer;" onclick="App.switchTab('tab-indifference')">
+            <div style="font-size: 28px; margin-bottom: 8px;">🎯</div>
+            <h3 style="font-size: 15px; margin-bottom: 6px; color: var(--secondary);">B. Indifference Point</h3>
+            <p style="font-size: 12px; color: var(--text-muted);">Calculate exact EBIT where two plans yield identical EPS, with decision rule guidance.</p>
+          </div>
+
+          <div class="card" style="cursor: pointer;" onclick="App.switchTab('tab-capital-structure')">
+            <div style="font-size: 28px; margin-bottom: 8px;">⚖️</div>
+            <h3 style="font-size: 15px; margin-bottom: 6px; color: var(--purple);">C. Capital Structure</h3>
+            <p style="font-size: 12px; color: var(--text-muted);">Analyze proportions of debt, equity, preference capital, D/E ratio, and interactive donut visual.</p>
+          </div>
+
+          <div class="card" style="cursor: pointer;" onclick="App.switchTab('tab-leverage')">
+            <div style="font-size: 28px; margin-bottom: 8px;">📈</div>
+            <h3 style="font-size: 15px; margin-bottom: 6px; color: var(--warning);">D. Financial Leverage</h3>
+            <p style="font-size: 12px; color: var(--text-muted);">Calculate Degree of Financial Leverage (DFL), Interest Coverage Ratio (ICR), and debt risk.</p>
+          </div>
+        </div>
+
+        <!-- Visual Timeline Flowchart Preview -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header-flex">
+            <span class="card-title">🔄 Financing Flow: From Capital Requirement to EPS</span>
+            <span class="badge-tag">Educational Flowchart</span>
+          </div>
+          <div id="homeFinancingFlowContainer"></div>
+        </div>
+
+        <!-- Donut Preview -->
+        <div class="card">
+          <div class="card-header-flex">
+            <span class="card-title">⚖️ Capital Structure Breakdown</span>
+            <button class="btn btn-outline btn-sm" onclick="App.switchTab('tab-capital-structure')">Customize Capital Structure ➔</button>
+          </div>
+          <div id="dashCapitalStructureDonutContainer"></div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 2: EBIT-EPS ANALYSIS CALCULATOR
+           =================================================================== -->
+      <section class="app-section" id="tab-ebit-eps">
+        <div class="section-header-block">
+          <h2>EBIT–EPS Analysis Calculator</h2>
+          <p>Compare alternative financing plans and observe how operating profit translates into shareholder earnings.</p>
+        </div>
+
+        <!-- Validation Alerts Container -->
+        <div id="ebitEpsValidationAlerts" style="margin-bottom: 16px;"></div>
+
+        <!-- General Inputs Card -->
+        <div class="card" style="margin-bottom: 20px;">
+          <div class="card-header-flex">
+            <span class="card-title">📋 1. General Financial Inputs</span>
+            <span class="badge-tag">Applies to All Plans</span>
+          </div>
+          <div class="grid-3">
+            <div class="form-group">
+              <label class="form-label" for="genEbit">
+                Operating Profit (EBIT):
+                <span class="term-info" title="EBIT: Earnings Before Interest and Tax. It represents operating profit before financing costs and tax.">ℹ️</span>
+              </label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="genEbit" class="form-control" value="1000000" step="10000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="genTaxRate">
+                Corporate Tax Rate (%):
+                <span class="term-info" title="Corporate Income Tax Rate: Determines the post-tax earnings and the value of interest tax shield.">ℹ️</span>
+              </label>
+              <div class="input-with-affix">
+                <input type="number" id="genTaxRate" class="form-control" value="30" step="0.5" min="0" max="100">
+                <span class="input-affix">%</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="genShares">
+                Existing Ordinary Shares:
+                <span class="term-info" title="Existing Ordinary Shares: The base equity shares currently in issue before new fundraising.">ℹ️</span>
+              </label>
+              <div class="input-with-affix">
+                <input type="number" id="genShares" class="form-control" value="100000" step="1000" min="1">
+                <span class="input-affix">shares</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financing Plan A & Plan B Configuration Cards -->
+        <div class="grid-2">
+          <!-- Plan A Card -->
+          <div class="card">
+            <div class="card-header-flex">
+              <input type="text" id="planAName" class="form-control" value="Plan A (Debt Financing)" style="font-weight: 700; font-size: 15px; color: var(--primary);">
+              <span class="badge-tag" style="background: var(--primary-light); color: var(--primary);">Plan A</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="planADebt">New Debt Capital Raised:</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="planADebt" class="form-control" value="500000" step="10000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="planADebtRate">Debt Interest Rate (%):</label>
+              <div class="input-with-affix">
+                <input type="number" id="planADebtRate" class="form-control" value="10" step="0.25" min="0">
+                <span class="input-affix">% p.a.</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="planANewEquity">New Equity Capital Raised:</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="planANewEquity" class="form-control" value="0" step="10000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="planAIssuePrice">Issue Price per Share:</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="planAIssuePrice" class="form-control" value="50" step="1" min="1">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="planAPrefCapital">Preference Share Capital (Optional):</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="planAPrefCapital" class="form-control" value="0" step="10000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="planAPrefRate">Preference Dividend Rate (%):</label>
+              <div class="input-with-affix">
+                <input type="number" id="planAPrefRate" class="form-control" value="0" step="0.5" min="0">
+                <span class="input-affix">%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plan B Card -->
+          <div class="card">
+            <div class="card-header-flex">
+              <input type="text" id="planBName" class="form-control" value="Plan B (Equity Financing)" style="font-weight: 700; font-size: 15px; color: var(--secondary);">
+              <span class="badge-tag" style="background: var(--secondary-light); color: var(--secondary);">Plan B</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="planBDebt">New Debt Capital Raised:</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="planBDebt" class="form-control" value="0" step="10000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="planBDebtRate">Debt Interest Rate (%):</label>
+              <div class="input-with-affix">
+                <input type="number" id="planBDebtRate" class="form-control" value="0" step="0.25" min="0">
+                <span class="input-affix">% p.a.</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="planBNewEquity">New Equity Capital Raised:</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="planBNewEquity" class="form-control" value="500000" step="10000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="planBIssuePrice">Issue Price per Share:</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="planBIssuePrice" class="form-control" value="50" step="1" min="1">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="planBPrefCapital">Preference Share Capital (Optional):</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="planBPrefCapital" class="form-control" value="0" step="10000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="planBPrefRate">Preference Dividend Rate (%):</label>
+              <div class="input-with-affix">
+                <input type="number" id="planBPrefRate" class="form-control" value="0" step="0.5" min="0">
+                <span class="input-affix">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calculated EPS Hero Results -->
+        <div class="grid-2">
+          <div class="card" id="planAResultCard"></div>
+          <div class="card" id="planBResultCard"></div>
+        </div>
+
+        <!-- Step-by-Step Income Statement Breakdown -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header-flex">
+              <span class="card-title">📝 Step-by-Step Breakdown: Plan A</span>
+              <span class="badge-tag">Academic Format</span>
+            </div>
+            <div id="planABreakdown"></div>
+            <div id="planAFormulaBox"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header-flex">
+              <span class="card-title">📝 Step-by-Step Breakdown: Plan B</span>
+              <span class="badge-tag">Academic Format</span>
+            </div>
+            <div id="planBBreakdown"></div>
+            <div id="planBFormulaBox"></div>
+          </div>
+        </div>
+
+        <!-- Interactive SVG Chart -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header-flex">
+            <span class="card-title">📈 Interactive EBIT–EPS Chart & Intersection</span>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span style="font-size: 11px; color: var(--text-muted);">Range:</span>
+              <input type="number" id="chartMinEbit" class="form-control form-select-sm" style="width: 100px;" value="0" placeholder="Min EBIT">
+              <input type="number" id="chartMaxEbit" class="form-control form-select-sm" style="width: 110px;" value="2500000" placeholder="Max EBIT">
+              <button id="chartAutoScaleBtn" class="btn btn-sm btn-outline">Auto-Scale</button>
+            </div>
+          </div>
+          <div id="ebitEpsChartContainer"></div>
+        </div>
+
+        <!-- Side-by-Side Comparison Table -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header-flex">
+            <span class="card-title">⚖️ Comprehensive Comparison & Neutral Analytical Report</span>
+            <button id="saveCalculationBtn" class="btn btn-primary btn-sm">💾 Save Calculation to History</button>
+          </div>
+          <div id="comparisonTableContainer"></div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 3: EBIT-EPS INDIFFERENCE POINT
+           =================================================================== -->
+      <section class="app-section" id="tab-indifference">
+        <div class="section-header-block">
+          <h2>EBIT–EPS Indifference Point</h2>
+          <p>Find the operating profit level at which two financing structures generate identical earnings per share.</p>
+        </div>
+
+        <!-- Indifference Hero Result Card -->
+        <div id="indifferenceSummaryCard"></div>
+
+        <!-- Standard Mathematical Formula & Explanation -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header-flex">
+            <span class="card-title">📐 Mathematical Formula for Indifference Point</span>
+            <span class="badge-tag">Standard Corporate Finance Formula</span>
+          </div>
+          <div class="formula-display-card">
+            <p style="margin-bottom: 10px;">At the indifference EBIT, the EPS of Plan 1 equals the EPS of Plan 2:</p>
+            <div class="math-fraction-box" style="font-size: 13px;">
+              <div class="math-numerator">[ (EBIT − I₁) × (1 − T) − PD₁ ]</div>
+              <div class="math-fraction-bar"></div>
+              <div class="math-denominator">N₁</div>
+            </div>
+            <span style="font-size: 18px; margin: 0 10px; vertical-align: middle;">=</span>
+            <div class="math-fraction-box" style="font-size: 13px;">
+              <div class="math-numerator">[ (EBIT − I₂) × (1 − T) − PD₂ ]</div>
+              <div class="math-fraction-bar"></div>
+              <div class="math-denominator">N₂</div>
+            </div>
+            <p style="margin-top: 10px; font-size: 12px; color: var(--text-sub);">
+              Where: <strong>EBIT</strong> = Indifference Operating Profit, <strong>I₁, I₂</strong> = Fixed Interest charges, <strong>T</strong> = Tax Rate, <strong>PD₁, PD₂</strong> = Preference Dividends, <strong>N₁, N₂</strong> = Total Ordinary Shares in issue.
+            </p>
+          </div>
+        </div>
+
+        <!-- Educational Insight & Decision Guidance -->
+        <div id="indifferenceDetailsBox" style="margin-bottom: 24px;"></div>
+
+        <!-- Chart with Indifference Marker Highlight -->
+        <div class="card">
+          <div class="card-header-flex">
+            <span class="card-title">🎯 Indifference Intersection Point Visualization</span>
+            <span class="badge-tag">Visual Break-Even</span>
+          </div>
+          <div id="indiffEbitEpsChartContainer"></div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 4: CAPITAL STRUCTURE ANALYSIS
+           =================================================================== -->
+      <section class="app-section" id="tab-capital-structure">
+        <div class="section-header-block">
+          <h2>Capital Structure Analysis</h2>
+          <p>Analyze the proportions of equity, preference shares, and debt capital funding the firm.</p>
+        </div>
+
+        <!-- Input & Donut Grid -->
+        <div class="grid-2">
+          <!-- Inputs Card -->
+          <div class="card">
+            <div class="card-header-flex">
+              <span class="card-title">💼 Capital Structure Components</span>
+              <button class="btn btn-outline btn-sm" data-preset="preset3">Load Preset</button>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="csEquity">Equity Share Capital:</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="csEquity" class="form-control" value="1200000" step="50000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="csPref">Preference Share Capital:</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="csPref" class="form-control" value="0" step="50000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="csLongDebt">Long-Term Debt (Debentures/Bonds/Loans):</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="csLongDebt" class="form-control" value="800000" step="50000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="csShortDebt">Short-Term Interest-Bearing Debt:</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="csShortDebt" class="form-control" value="0" step="10000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="csOtherDebt">Other Borrowings / Debt:</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="csOtherDebt" class="form-control" value="0" step="10000" min="0">
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive SVG Donut Chart Card -->
+          <div class="card">
+            <div class="card-header-flex">
+              <span class="card-title">📊 Capital Structure Donut Chart</span>
+              <span class="badge-tag">Interactive Proportions</span>
+            </div>
+            <div id="capitalStructureDonutContainer"></div>
+          </div>
+        </div>
+
+        <!-- Calculated Ratios Cards -->
+        <div class="grid-4">
+          <div class="card">
+            <span class="card-title" style="font-size: 13px; color: var(--text-muted);">Total Capital Employed</span>
+            <div class="result-hero-val" id="csTotalCapital" style="font-size: 22px;">₹20,00,000</div>
+            <div style="font-size: 11.5px; color: var(--text-muted);">Equity + Preference + Debt</div>
+          </div>
+
+          <div class="card">
+            <span class="card-title" style="font-size: 13px; color: var(--warning);">Debt Ratio</span>
+            <div class="result-hero-val text-warning" id="csDebtRatio" style="font-size: 22px;">40.00%</div>
+            <div style="background-color: var(--bg-surface-alt); height: 6px; border-radius: 3px; overflow: hidden; margin-top: 6px;">
+              <div id="csBarDebt" style="background-color: var(--warning); height: 100%; width: 40%;"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <span class="card-title" style="font-size: 13px; color: var(--primary);">Equity Ratio</span>
+            <div class="result-hero-val text-primary" id="csEquityRatio" style="font-size: 22px;">60.00%</div>
+            <div style="background-color: var(--bg-surface-alt); height: 6px; border-radius: 3px; overflow: hidden; margin-top: 6px;">
+              <div id="csBarEquity" style="background-color: var(--primary); height: 100%; width: 60%;"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <span class="card-title" style="font-size: 13px; color: var(--purple);">Debt-to-Equity (D/E)</span>
+            <div class="result-hero-val" id="csDeRatio" style="font-size: 22px; color: var(--purple);">0.67</div>
+            <div style="font-size: 11.5px; color: var(--text-muted);">Total Debt / Equity</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 5: DEBT VS EQUITY SIMULATOR (FINANCING MIX)
+           =================================================================== -->
+      <section class="app-section" id="tab-debt-equity">
+        <div class="section-header-block">
+          <h2>Debt vs Equity Financing Simulator</h2>
+          <p>Model incremental financing requirements: compare 100% Debt, 100% Equity, and custom mixes.</p>
+        </div>
+
+        <!-- Simulator Configuration Card -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header-flex">
+            <span class="card-title">🎛️ Incremental Capital Project Parameters</span>
+            <span class="badge-tag">Simulator Controls</span>
+          </div>
+          <div class="grid-3">
+            <div class="form-group">
+              <label class="form-label" for="mixTotalReq">Total Capital Required:</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="mixTotalReq" class="form-control" value="5000000" step="100000" min="0">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mixEbit">Expected Project Operating Profit (EBIT):</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="mixEbit" class="form-control" value="1200000" step="50000" min="0">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mixTax">Corporate Tax Rate (%):</label>
+              <div class="input-with-affix">
+                <input type="number" id="mixTax" class="form-control" value="30" step="0.5" min="0" max="100">
+                <span class="input-affix">%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="form-group">
+              <label class="form-label" for="mixRate">Interest Rate on Debt (%):</label>
+              <div class="input-with-affix">
+                <input type="number" id="mixRate" class="form-control" value="10" step="0.25" min="0">
+                <span class="input-affix">%</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mixShares">Existing Number of Shares:</label>
+              <div class="input-with-affix">
+                <input type="number" id="mixShares" class="form-control" value="100000" step="1000" min="1">
+                <span class="input-affix">shares</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mixPrice">New Equity Issue Price:</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="mixPrice" class="form-control" value="50" step="1" min="1">
+                <span class="input-affix">/ share</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Financing Mix Slider -->
+          <div style="background-color: var(--bg-surface-alt); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-weight: 700; font-size: 13px;">⚖️ Adjust Financing Mix:</span>
+              <div style="display: flex; gap: 12px; font-size: 12px;">
+                <span>Debt: <input type="number" id="mixDebtInput" class="form-control" style="width: 50px; display: inline-block; padding: 2px 4px; border: 1px solid var(--border-color); background: var(--bg-surface);" value="40" min="0" max="100">%</span>
+                <span>Equity: <input type="number" id="mixEquityInput" class="form-control" style="width: 50px; display: inline-block; padding: 2px 4px; border: 1px solid var(--border-color); background: var(--bg-surface);" value="60" readonly>%</span>
+              </div>
+            </div>
+            <input type="range" id="mixDebtSlider" min="0" max="100" value="40" step="5" style="width: 100%; cursor: pointer;">
+          </div>
+        </div>
+
+        <!-- 3-Way Side-by-Side Results -->
+        <div id="financingMixResultsContainer"></div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 6: FINANCIAL LEVERAGE & INTEREST COVERAGE
+           =================================================================== -->
+      <section class="app-section" id="tab-leverage">
+        <div class="section-header-block">
+          <h2>Financial Leverage & Interest Coverage Analysis</h2>
+          <p>Quantify financial risk, leverage magnification of EPS, and debt servicing capability.</p>
+        </div>
+
+        <div class="grid-2">
+          <!-- Inputs Card -->
+          <div class="card">
+            <div class="card-header-flex">
+              <span class="card-title">⚙️ Financial Cost Parameters</span>
+              <button class="btn btn-outline btn-sm" data-preset="preset4">Load Preset 4</button>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="levEbit">Operating Profit (EBIT):</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="levEbit" class="form-control" value="1500000" step="50000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="levInterest">Contractual Interest Expense:</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="levInterest" class="form-control" value="300000" step="10000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="levPrefDiv">Preference Dividend (if any):</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="levPrefDiv" class="form-control" value="0" step="5000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="levTax">Corporate Tax Rate (%):</label>
+              <div class="input-with-affix">
+                <input type="number" id="levTax" class="form-control" value="30" step="0.5" min="0" max="100">
+                <span class="input-affix">%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero Metrics Cards -->
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- DFL Card -->
+            <div class="card">
+              <div class="card-header-flex">
+                <span class="card-title">Degree of Financial Leverage (DFL)</span>
+                <span class="badge-tag badge-primary">EBIT Sensitivity</span>
+              </div>
+              <div class="result-hero-val" id="levDflHero" style="font-size: 36px; color: var(--primary);">1.25x</div>
+              <div id="levDflInterpretation"></div>
+            </div>
+
+            <!-- ICR Card -->
+            <div class="card">
+              <div class="card-header-flex">
+                <span class="card-title">Interest Coverage Ratio (ICR)</span>
+                <span class="badge-tag">Solvency Safety</span>
+              </div>
+              <div class="result-hero-val" id="levIcrHero" style="font-size: 36px; color: var(--secondary);">5.00x</div>
+              <div id="levIcrInterpretation"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 7: SCENARIO ANALYSIS
+           =================================================================== -->
+      <section class="app-section" id="tab-scenario">
+        <div class="section-header-block">
+          <h2>Scenario Analysis (Low, Expected, High EBIT)</h2>
+          <p>Examine how cyclical changes in operational profitability impact EPS across different financing structures.</p>
+        </div>
+
+        <!-- Scenario EBIT Controls -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header-flex">
+            <span class="card-title">🎯 Define Operating Profit Scenarios</span>
+            <span class="badge-tag">Custom Scenarios</span>
+          </div>
+          <div class="grid-3">
+            <div class="form-group">
+              <label class="form-label" for="scLowEbit">Low EBIT (Pessimistic):</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="scLowEbit" class="form-control" value="500000" step="50000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="scExpEbit">Expected EBIT (Base Case):</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="scExpEbit" class="form-control" value="1000000" step="50000" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="scHighEbit">High EBIT (Optimistic):</label>
+              <div class="input-with-affix">
+                <span class="input-affix currency-prefix">₹</span>
+                <input type="number" id="scHighEbit" class="form-control" value="2000000" step="50000" min="0">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scenario Table & Chart Grid -->
+        <div class="grid-2">
+          <!-- Table -->
+          <div class="card">
+            <div class="card-header-flex">
+              <span class="card-title">📋 Scenario EPS Comparison Table</span>
+            </div>
+            <div class="table-responsive">
+              <table class="table modern-finance-table">
+                <thead>
+                  <tr>
+                    <th>Operating Scenario</th>
+                    <th>Plan A EPS</th>
+                    <th>Plan B EPS</th>
+                    <th>Difference</th>
+                    <th>Preferred Plan</th>
+                  </tr>
+                </thead>
+                <tbody id="scenarioTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Chart -->
+          <div class="card">
+            <div class="card-header-flex">
+              <span class="card-title">📊 Scenario Bar Chart</span>
+            </div>
+            <div id="scenarioChartContainer"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 8: SENSITIVITY MATRIX
+           =================================================================== -->
+      <section class="app-section" id="tab-sensitivity">
+        <div class="section-header-block">
+          <h2>Sensitivity Matrix</h2>
+          <p>Two-dimensional sensitivity table illustrating EPS under simultaneous variations in EBIT and Interest Rates.</p>
+        </div>
+        <div class="card">
+          <div class="card-header-flex">
+            <span class="card-title">🧪 2D Sensitivity Table: EBIT Levels vs Borrowing Interest Rates</span>
+            <span class="badge-tag">Stress-Test Matrix</span>
+          </div>
+          <div id="sensitivityMatrixContainer"></div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 9: ADVANCED CALCULATIONS & FORMULAS (9 FORMULAS)
+           =================================================================== -->
+      <section class="app-section" id="tab-advanced">
+        <div class="section-header-block">
+          <h2>Advanced Capital Structure Formulas & Derivations</h2>
+          <p>Complete academic repository containing mathematical equations, variable definitions, and step-by-step verified examples.</p>
+        </div>
+        <div id="advancedCardsContainer"></div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 10: LEARN CAPITAL STRUCTURE (THEORY & CONCEPTS)
+           =================================================================== -->
+      <section class="app-section" id="tab-learn">
+        <div class="section-header-block">
+          <h2>Learn Capital Structure & Financing Strategy</h2>
+          <p>Comprehensive textbook chapter notes designed for B.Com, M.Com, ACCA, and MBA corporate finance exams.</p>
+        </div>
+
+        <!-- Visual Flow Diagram -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header-flex">
+            <span class="card-title">🔄 Financing Flowchart: How Financing Decisions Impact EPS</span>
+            <span class="badge-tag">Process Architecture</span>
+          </div>
+          <div id="financingFlowContainer"></div>
+        </div>
+
+        <!-- Debt vs Equity Visual Comparison Table -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header-flex">
+            <span class="card-title">⚖️ Interactive Debt vs Equity Learning Screen</span>
+            <span class="badge-tag">Core Concepts</span>
+          </div>
+          <div id="learnDebtEquityTableContainer"></div>
+          <div class="neutral-summary-statement" style="margin-top: 14px;">
+            ⚠️ <strong>Academic Disclaimer:</strong> These are general economic characteristics. The actual effect depends on the company's financial position, tax rate, financing covenants, and underlying operational volatility.
+          </div>
+        </div>
+
+        <!-- Deep Dive Educational Cards -->
+        <div class="grid-2">
+          <div class="card">
+            <h3 style="font-size: 15px; color: var(--primary); margin-bottom: 8px;">1. Why Debt Can Increase EPS (Leverage Magnification)</h3>
+            <p style="font-size: 13px; color: var(--text-sub); line-height: 1.5;">
+              When operating profit (EBIT) is sufficiently high, using debt is advantageous because creditors receive only a fixed interest return. The remaining surplus profit belongs entirely to ordinary shareholders. Because no new shares are issued, that expanding surplus is divided among the existing share base, causing EPS to surge!
+            </p>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size: 15px; color: var(--danger); margin-bottom: 8px;">2. Why Debt Increases Financial Risk</h3>
+            <p style="font-size: 13px; color: var(--text-sub); line-height: 1.5;">
+              Interest is a legal, contractual obligation. Regardless of whether sales drop or economic recessions hit, debt interest and principal installments must be paid on time. If operating profits fall below interest obligations (EBIT < Interest), the company suffers losses and risks loan default or bankruptcy.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size: 15px; color: var(--secondary); margin-bottom: 8px;">3. Why Equity Can Reduce Financial Risk</h3>
+            <p style="font-size: 13px; color: var(--text-sub); line-height: 1.5;">
+              Ordinary equity does not require compulsory periodic interest payments or fixed principal redemption dates. If earnings decline, the Board of Directors can reduce or omit dividend payouts without legal default. However, issuing new equity shares increases the total share count, which can dilute EPS.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size: 15px; color: var(--purple); margin-bottom: 8px;">4. The Corporate Tax Shield Explained</h3>
+            <p style="font-size: 13px; color: var(--text-sub); line-height: 1.5;">
+              Under corporate tax law, interest expense is an allowable deduction against revenue before calculating taxable profit. In contrast, equity dividends are distributed out of post-tax profit. Therefore, every ₹1 of interest saves <code>₹1 × Tax Rate</code> in corporate income taxes, reducing the net effective cost of debt!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           TAB 11: CALCULATION HISTORY
+           =================================================================== -->
+      <section class="app-section" id="tab-history">
+        <div class="section-header-block">
+          <h2>Calculation History</h2>
+          <p>Saved calculations stored in browser LocalStorage. Reload, analyze, or delete previous runs.</p>
+        </div>
+        <div id="historyListContainer"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Financial Terms Glossary Modal -->
+  <div id="glossaryModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>📖 Financial Terms & Commerce Glossary</h3>
+        <button id="closeGlossaryBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body" id="glossaryModalBody">
+        <!-- Dynamically rendered or listed terms -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/math.js"></script>
+  <script src="js/chart.js"></script>
+  <script src="js/history.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/learn.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
